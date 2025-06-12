@@ -291,3 +291,23 @@ if __name__ == '__main__':
 
     logger.info(f"Starting COVID-19 Tracker on port {port} (debug={debug})")
     app.run(host='0.0.0.0', port=port, debug=debug)
+
+# Render-specific configuration
+if __name__ != '__main__':
+    # Running on Render or other production server
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    
+    # Ensure the app initializes properly on Render
+    with app.app_context():
+        try:
+            # Initialize data on startup if needed
+            if not app.covid_data:
+                app.covid_data = get_covid_tracker_data(
+                    app.config['DISEASE_SH_API'],
+                    app.config['CDC_API_BASE'],
+                    use_cache=True
+                )
+                logger.info("Initial data loaded on startup")
+        except Exception as e:
+            logger.warning(f"Could not load initial data on startup: {e}")
