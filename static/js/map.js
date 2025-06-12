@@ -529,21 +529,7 @@ class CovidMap {
      * @param {Object} locationData - Location data object
      */
     debugLocationData(locationData) {
-        console.log('🔍 Debugging location data:', {
-            name: locationData.name,
-            latitude: locationData.latitude,
-            longitude: locationData.longitude,
-            marker_color: locationData.marker_color,
-            infection_rate: locationData.infection_rate,
-            type: locationData.type,
-            hasAllFields: {
-                name: 'name' in locationData,
-                latitude: 'latitude' in locationData,
-                longitude: 'longitude' in locationData,
-                marker_color: 'marker_color' in locationData,
-                infection_rate: 'infection_rate' in locationData
-            }
-        });
+        console.log('no longer needed');
     }
 
     /**
@@ -653,15 +639,7 @@ class CovidMap {
     /**
      * Debug map issues
      */
-    debugMap() {
-        console.log('🔍 Map Debug Info:');
-        console.log('- Map instance:', this.map);
-        console.log('- Map container:', document.getElementById('map'));
-        console.log('- Map size:', this.map ? this.map.getSize() : 'No map');
-        console.log('- Map zoom:', this.map ? this.map.getZoom() : 'No map');
-        console.log('- Map center:', this.map ? this.map.getCenter() : 'No map');
-        console.log('- Markers count:', this.markers.length);
-        
+    debugMap() {       
         // Check if Leaflet CSS is loaded
         const leafletCSS = document.querySelector('link[href*="leaflet"]');
         console.log('- Leaflet CSS loaded:', !!leafletCSS);

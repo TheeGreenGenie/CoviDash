@@ -118,7 +118,7 @@ class DataProcessor:
         if recovery_rate < 0.1:
             conservative_active = min(raw_active, int(cleaned['population'] * 0.02))  # Cap at 2% of population
             cleaned['active'] = conservative_active
-            print(f"DEBUG: {cleaned['name']} - Used conservative active: {conservative_active} (raw was {raw_active})")
+            
         else:
             # Recovery data looks realistic, use it
             cleaned['active'] = raw_active

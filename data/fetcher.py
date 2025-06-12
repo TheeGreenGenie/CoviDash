@@ -387,7 +387,6 @@ class DataFetcher:
                 city_data['estimated'] = True
                 city_data['estimation'] = estimated_recovered
                 
-                print(f"DEBUG FETCHER: {city_data.get('name', 'Unknown')} - Original recovered: {recovered}, Estimated: {estimated_recovered}")
                 
                 # Update recovered to use estimation
                 recovered = estimated_recovered
@@ -417,7 +416,6 @@ class DataFetcher:
             city_data['recovered'] = recovered
             city_data['active'] = active_cases
             
-            print(f"DEBUG FETCHER FINAL: {city_data.get('name', 'Unknown')} - estimated: {city_data['estimated']}, estimation: {city_data['estimation']}, final recovered: {recovered}")
             
             return city_data
             
@@ -466,7 +464,6 @@ class DataFetcher:
                 state_data['estimated'] = True
                 state_data['estimation'] = estimated_recovered
                 
-                print(f"DEBUG FETCHER STATE: {state_data.get('name', 'Unknown')} - Original recovered: {recovered}, Estimated: {estimated_recovered}")
                 
                 # Update recovered to use estimation
                 state_data['recovered'] = estimated_recovered
@@ -474,7 +471,6 @@ class DataFetcher:
                 # Recalculate active cases
                 state_data['active'] = max(0, total_cases - deaths - estimated_recovered)
             
-            print(f"DEBUG FETCHER STATE FINAL: {state_data.get('name', 'Unknown')} - estimated: {state_data['estimated']}, estimation: {state_data['estimation']}, final recovered: {state_data['recovered']}")
             
             return state_data
             
@@ -523,16 +519,13 @@ class DataFetcher:
                 country_data['estimated'] = True
                 country_data['estimation'] = estimated_recovered
                 
-                print(f"DEBUG FETCHER COUNTRY: {country_data.get('name', 'Unknown')} - Original recovered: {recovered}, Estimated: {estimated_recovered}")
                 
                 # Update recovered to use estimation
                 country_data['recovered'] = estimated_recovered
                 
                 # Recalculate active cases
                 country_data['active'] = max(0, total_cases - deaths - estimated_recovered)
-            
-            print(f"DEBUG FETCHER COUNTRY FINAL: {country_data.get('name', 'Unknown')} - estimated: {country_data['estimated']}, estimation: {country_data['estimation']}, final recovered: {country_data['recovered']}")
-            
+                        
             return country_data
             
         except Exception as e:
