@@ -378,7 +378,7 @@ class DataFetcher:
             if recovery_rate < 0.1:  # If less than 10% recovered (unrealistic)
                 # Estimate recoveries: assume 85% of non-fatal cases recover over time
                 # Leave some active cases for ongoing infections
-                estimated_recovered = int((total_cases - deaths) * 0.92)
+                estimated_recovered = int((total_cases - deaths) * 0.96)
                 
                 # Don't exceed realistic limits
                 estimated_recovered = min(estimated_recovered, int(total_cases * 0.95))
@@ -456,7 +456,7 @@ class DataFetcher:
             
             if recovery_rate < 0.1 and total_cases > 0:  # If less than 10% recovered (unrealistic)
                 # Estimate recoveries: assume 85% of non-fatal cases recover over time
-                estimated_recovered = int((total_cases - deaths) * 0.92)
+                estimated_recovered = int((total_cases - deaths) * 0.96)
                 
                 # Don't exceed realistic limits
                 estimated_recovered = min(estimated_recovered, int(total_cases * 0.95))
@@ -513,7 +513,7 @@ class DataFetcher:
             
             if recovery_rate < 0.1 and total_cases > 0:  # If less than 10% recovered (unrealistic)
                 # Estimate recoveries: assume 85% of non-fatal cases recover over time
-                estimated_recovered = int((total_cases - deaths) * 0.92)
+                estimated_recovered = int((total_cases - deaths) * 0.96)
                 
                 # Don't exceed realistic limits
                 estimated_recovered = min(estimated_recovered, int(total_cases * 0.95))
