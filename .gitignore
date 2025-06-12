@@ -1,4 +1,5 @@
 .env
+.gitignore
 citations.txt
 FileStructure.txt
 Overview.txt
