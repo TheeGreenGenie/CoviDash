@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive COVID-19 tracker with real-time data visualization on a dark-themed world map">
+    <meta name="keywords" content="COVID-19, coronavirus, tracker, map, statistics, real-time">
+    <meta name="author" content="COVID Tracker">
+    
+    <title>{% block title %}COVID-19 Global Tracker{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          crossorigin="" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Loading COVID-19 Data</h2>
+            <p>Fetching latest global statistics...</p>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app-container" class="app-container hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="app-title">
+                        <span class="virus-icon">🦠</span>
+                        COVID-19 Global Tracker
+                    </h1>
+                    <p class="app-subtitle">Real-time pandemic monitoring dashboard</p>
+                </div>
+                
+                <div class="header-right">
+                    <div class="header-stats" id="header-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Cases</span>
+                            <span class="stat-value" id="total-cases">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Deaths</span>
+                            <span class="stat-value" id="total-deaths">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Cities Tracked</span>
+                            <span class="stat-value" id="total-cities">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="header-controls">
+                        <button id="refresh-btn" class="control-btn" title="Refresh Data">
+                            <span class="refresh-icon">🔄</span>
+                            Refresh
+                        </button>
+                        <button id="info-btn" class="control-btn" title="Information">
+                            <span class="info-icon">ℹ️</span>
+                            Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Last Updated Info -->
+            <div class="update-info">
+                <span id="last-updated">Last updated: Loading...</span>
+            </div>
+        </header>
+
+        <!-- Map Container -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Side Panel (for statistics and legend) -->
+        <aside class="side-panel" id="side-panel">
+            <div class="panel-header">
+                <h3>Statistics & Legend</h3>
+                <button class="panel-toggle" id="panel-toggle" title="Toggle Panel">
+                    <span class="toggle-icon">◀</span>
+                </button>
+            </div>
+            
+            <div class="panel-content">
+                <!-- Risk Level Legend -->
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #FEB24C;"></div>
+                        <span>Low (&lt;0.1% infected)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #FD8D3C;"></div>
+                        <span>Low-Medium (0.1-0.5%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #FC4E2A;"></div>
+                        <span>Medium (0.5-1%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #E31A1C;"></div>
+                        <span>Medium-High (1-2%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #BD0026;"></div>
+                        <span>High (2-5%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #800026;"></div>
+                        <span>Critical (&gt;5%)</span>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="stats-section">
+                    <h4>Global Statistics</h4>
+                    <div class="detailed-stats" id="detailed-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Average Infection Rate:</span>
+                            <span class="stat-value" id="avg-infection-rate">Loading...</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Highest Rate:</span>
+                            <span class="stat-value" id="highest-rate">Loading...</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Lowest Rate:</span>
+                            <span class="stat-value" id="lowest-rate">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-distribution" id="risk-distribution">
+                        <h5>Cities by Risk Level</h5>
+                        <div class="risk-bars">
+                            <div class="risk-bar">
+                                <span class="risk-label">Critical</span>
+                                <div class="risk-bar-bg">
+                                    <div class="risk-bar-fill critical" id="critical-bar"></div>
+                                </div>
+                                <span class="risk-count" id="critical-count">0</span>
+                            </div>
+                            <div class="risk-bar">
+                                <span class="risk-label">High</span>
+                                <div class="risk-bar-bg">
+                                    <div class="risk-bar-fill high" id="high-bar"></div>
+                                </div>
+                                <span class="risk-count" id="high-count">0</span>
+                            </div>
+                            <div class="risk-bar">
+                                <span class="risk-label">Medium</span>
+                                <div class="risk-bar-bg">
+                                    <div class="risk-bar-fill medium" id="medium-bar"></div>
+                                </div>
+                                <span class="risk-count" id="medium-count">0</span>
+                            </div>
+                            <div class="risk-bar">
+                                <span class="risk-label">Low</span>
+                                <div class="risk-bar-bg">
+                                    <div class="risk-bar-fill low" id="low-bar"></div>
+                                </div>
+                                <span class="risk-count" id="low-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Error Message Container -->
+        <div id="error-container" class="error-container hidden">
+            <div class="error-content">
+                <h3>⚠️ Data Unavailable</h3>
+                <p id="error-message">Unable to load COVID-19 data. Please try refreshing the page.</p>
+                <button id="retry-btn" class="retry-btn">Retry</button>
+            </div>
+        </div>
+
+        <!-- Info Modal -->
+        <div id="info-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>About COVID-19 Global Tracker</h3>
+                    <button class="modal-close" id="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>This interactive dashboard provides real-time COVID-19 data for major cities worldwide.</p>
+                    
+                    <h4>Features:</h4>
+                    <ul>
+                        <li>🗺️ Interactive world map with city markers</li>
+                        <li>📊 Color-coded risk levels based on infection rates</li>
+                        <li>📈 Real-time statistics and trends</li>
+                        <li>🔄 Automatic data updates every 24 hours</li>
+                        <li>🌙 Dark theme optimized for extended viewing</li>
+                    </ul>
+                    
+                    <h4>Data Sources:</h4>
+                    <ul>
+                        <li><strong>Primary:</strong> Disease.sh API (Johns Hopkins CSSE)</li>
+                        <li><strong>Secondary:</strong> CDC Open Data Portal</li>
+                    </ul>
+                    
+                    <h4>How to Use:</h4>
+                    <ul>
+                        <li>Click on city markers to view detailed information</li>
+                        <li>Use the legend to understand risk level colors</li>
+                        <li>Check the statistics panel for global trends</li>
+                        <li>Click refresh to get the latest data</li>
+                    </ul>
+                    
+                    <p class="disclaimer">
+                        <strong>Disclaimer:</strong> This data is for informational purposes only. 
+                        Always consult official health authorities for medical guidance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            crossorigin=""></script>
+    
+    <!-- Custom JavaScript - Load map.js BEFORE api.js -->
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
